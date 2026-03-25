@@ -1,0 +1,253 @@
+:root {
+  color-scheme: light;
+  --bg: #f7f0e5;
+  --surface: rgba(255, 252, 247, 0.88);
+  --surface-strong: #fffaf2;
+  --text: #1f1a17;
+  --muted: #5e554e;
+  --accent: #bb4d00;
+  --accent-soft: #ffd5b8;
+  --border: rgba(79, 51, 30, 0.14);
+  --shadow: 0 24px 60px rgba(85, 49, 20, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255, 188, 122, 0.45), transparent 28%),
+    linear-gradient(180deg, #f8f1e6 0%, #f4eadb 100%);
+  color: var(--text);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+a {
+  color: inherit;
+}
+
+.page-shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.hero-card,
+.panel {
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.hero-card {
+  padding: 40px;
+  margin-bottom: 24px;
+}
+
+.eyebrow,
+.section-label {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero-card h1,
+.panel h2 {
+  margin: 0;
+  line-height: 0.95;
+}
+
+.hero-card h1 {
+  font-size: clamp(3rem, 8vw, 5.8rem);
+}
+
+.hero-title {
+  margin: 12px 0 0;
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+
+.hero-copy,
+.body-copy,
+.project-card p,
+.highlight-list li {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.hero-copy {
+  max-width: 720px;
+  margin: 22px 0 0;
+  font-size: 1.1rem;
+}
+
+.hero-actions,
+.hero-meta,
+.tag-row,
+.section-head,
+.project-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hero-actions {
+  margin-top: 26px;
+}
+
+.hero-meta {
+  margin-top: 28px;
+  align-items: center;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: transform 0.18s ease, background-color 0.18s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button.primary {
+  background: var(--text);
+  color: #fff8f2;
+}
+
+.button.secondary {
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+}
+
+.status-pill,
+.api-tag,
+.tag {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-strong);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #9e9489;
+}
+
+.status-pill.online .status-dot {
+  background: #2a9d47;
+}
+
+.status-pill.offline .status-dot {
+  background: #cc6b2c;
+}
+
+.api-tag,
+.tag {
+  padding: 8px 12px;
+}
+
+.api-tag {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.panel {
+  padding: 28px;
+}
+
+.panel h2 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  margin-bottom: 14px;
+}
+
+.accent-panel {
+  background:
+    linear-gradient(135deg, rgba(255, 226, 198, 0.92), rgba(255, 246, 233, 0.95));
+}
+
+.highlight-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.highlight-list li + li {
+  margin-top: 12px;
+}
+
+.section-head {
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.project-card {
+  padding: 20px;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+}
+
+.project-top {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.project-top h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.project-top a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+@media (max-width: 900px) {
+  .content-grid,
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card,
+  .panel {
+    padding: 24px;
+  }
+}

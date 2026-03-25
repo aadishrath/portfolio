@@ -133,3 +133,25 @@
 .popup-close-icon:hover {
   background: none;
 }
+
+@media (max-width: 640px) {
+  .popup-box {
+    width: calc(100vw - 1rem);
+    max-height: 88vh;
+  }
+
+  .popup-header-container {
+    padding: 16px 18px 0;
+  }
+
+  .popup-title {
+    font-size: 1.3rem;
+    margin-bottom: 14px;
+    padding-right: 0.5rem;
+  }
+
+  .popup-body-container {
+    padding: 84px 12px 22px;
+    max-height: 74vh;
+  }
+}

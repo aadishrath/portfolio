@@ -45,6 +45,7 @@ button:hover {
   justify-content: center;
   gap: 2rem;
   font-size: 1.1rem;
+  flex-wrap: wrap;
 }
 
 .contact-links a {
@@ -98,4 +99,15 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (max-width: 640px) {
+  .contact-section {
+    padding: 2.5rem 1rem;
+  }
+
+  .contact-links {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }

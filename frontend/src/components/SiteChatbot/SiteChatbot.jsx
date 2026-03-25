@@ -2,13 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { iconsMap } from '../../assets/iconsMap';
 import { FaArrowUp, FaGlobeAmericas, FaRegCompass, FaRobot, FaTimes } from 'react-icons/fa';
-import { getQuickPrompts, getRouteLabel, resolveChatbotAnswer } from '../../lib/siteChatbotKnowledge';
+import { CHATBOT_API_URL } from '../../lib/api';
+import { getQuickPrompts, getRouteLabel } from '../../lib/siteChatbotKnowledge';
 import './SiteChatbot.css';
 
 const WELCOME_MESSAGE = {
   id: 'welcome',
   role: 'assistant',
-  text: "Ask me about my portfolio, the projects on this site, or a basic stable world topic. I'll do my best to answer using the information I have!",
+  text: "Ask about Aadish or how to use one of the demos.",
   sources: [],
 };
 
@@ -81,7 +82,7 @@ function SiteChatbot() {
     });
   }, [messages, isLoading]);
 
-  async function submitPrompt(rawPrompt) {
+async function submitPrompt(rawPrompt) {
     const prompt = rawPrompt.trim();
     if (!prompt || isLoading) {
       return;
@@ -94,17 +95,38 @@ function SiteChatbot() {
     setIsLoading(true);
 
     try {
-      const answer = await resolveChatbotAnswer({
-        query: prompt,
-        pathname: location.pathname,
+      const history = messages
+        .filter((message) => message.id !== 'welcome')
+        .slice(-6)
+        .map((message) => ({
+          role: message.role,
+          text: message.text,
+        }));
+
+      const response = await fetch(`${CHATBOT_API_URL}/query`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: prompt,
+          pathname: location.pathname,
+          history,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('chatbot-request-failed');
+      }
+
+      const answer = await response.json();
 
       setMessages((current) => [
         ...current,
         createMessage('assistant', answer.text, answer.sources),
       ]);
     } catch {
-      setError("I hit a snag while answering that. Try again, or ask something about the site's content.");
+      setError("I hit a snag while answering that. Try again in a moment, or ask about Aadish.");
     } finally {
       setIsLoading(false);
     }
@@ -125,9 +147,9 @@ function SiteChatbot() {
         <section className="site-chatbot__panel" aria-label="Website chatbot">
           <header className="site-chatbot__header">
             <div className="site-chatbot__header-copy">
-              <span className="site-chatbot__eyebrow">Site Guide</span>
-              <h2>Ask the portfolio chatbot</h2>
-              <p>Site answers are grounded in the portfolio. General answers use a public encyclopedia lookup when available.</p>
+              <span className="site-chatbot__eyebrow">Portfolio Assistant</span>
+              <h2>Ask about Aadish's work</h2>
+              <p>Answers are grounded in the portfolio and tuned for recruiter-style questions, demo walkthroughs, and quick navigation help.</p>
             </div>
             <button
               type="button"
@@ -190,7 +212,7 @@ function SiteChatbot() {
                     <FaRobot />
                     <span>Assistant</span>
                   </div>
-                  <p>Thinking through that now...</p>
+                  <p>Pulling the best grounded answer now...</p>
                 </article>
               )}
 
@@ -216,7 +238,7 @@ function SiteChatbot() {
                 id="site-chatbot-input"
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Ask about the site or a basic world topic"
+                placeholder="Ask about Aadish or how to use one of the demos."
                 autoComplete="off"
               />
               <button type="submit" className="site-chatbot__send-button" disabled={isLoading}>

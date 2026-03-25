@@ -277,7 +277,9 @@ body.dark .rag-empty-state {
 
 @media (max-width: 640px) {
   .rag-demo-page {
-    padding-top: 5.75rem;
+    padding-top: 5.25rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 
   .rag-status-row,
@@ -285,5 +287,16 @@ body.dark .rag-empty-state {
   .rag-query-actions {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .rag-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rag-primary-button,
+  .rag-secondary-button,
+  .rag-file-picker {
+    width: 100%;
+    justify-content: center;
   }
 }

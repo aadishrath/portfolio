@@ -4,6 +4,8 @@
     padding-bottom: 2rem;
     max-width: 1200px;
     margin: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .project-list {
@@ -28,4 +30,16 @@
   font-weight: 600;
   margin-bottom: 20px;
   color: #000;
+}
+
+@media (max-width: 768px) {
+  .projects-page {
+    padding-top: 4.5rem;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+
+  .project-title {
+    font-size: 1.8rem;
+  }
 }

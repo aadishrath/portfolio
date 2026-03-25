@@ -1,6 +1,4 @@
-
-// React page that loads Pyodide and runs a small Python sentiment analyzer in-browser.
-import { useEffect, useState, useRef, Suspense } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import SentimentCard from "../../components/SentimentCard/SentimentCard";
 import Spinner from "../../components/Spinner/Spinner";
 import FullSentimentCard from "../../components/FulllSentimentCard/FullSentimentCard";
@@ -10,9 +8,8 @@ import "./LightSection.css";
 const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.24.0/full/pyodide.js";
 
 export default function SentimentDemo() {
-  const defaultText = "I loved the product — it was fast, intuitive, and delightful!";
+  const defaultText = "I loved the product - it was fast, intuitive, and delightful!";
 
-  // Light (Pyodide) version state
   const [pyodideLoaded, setPyodideLoaded] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Initializing Pyodide...");
   const [inputText, setInputText] = useState(defaultText);
@@ -22,7 +19,6 @@ export default function SentimentDemo() {
   const labelClass =
     result?.label === "positive" ? "label-positive" : result?.label === "negative" ? "label-negative" : "label-neutral";
 
-  // Full end-to-end version state
   const [fullText, setFullText] = useState(defaultText);
   const [fullResult, setFullResult] = useState(null);
   const [fullLoading, setFullLoading] = useState(false);
@@ -30,6 +26,9 @@ export default function SentimentDemo() {
   const [fullVersion, setFullVersion] = useState("v1");
   const fullLabelClass =
     fullResult?.sentiment === "positive" ? "label-positive" : fullResult?.sentiment === "negative" ? "label-negative" : "label-neutral";
+
+  const lightComparisonScore = result ? Math.min(Math.abs(result.score), 1) : 0;
+  const fullComparisonConfidence = fullResult ? Math.min(Math.abs(fullResult.confidence), 1) : 0;
 
   useEffect(() => {
     let cancelled = false;
@@ -43,8 +42,7 @@ export default function SentimentDemo() {
         document.head.appendChild(script);
         await new Promise((resolve, reject) => {
           script.onload = resolve;
-          script.onerror = () =>
-            reject(new Error("Failed to load Pyodide script"));
+          script.onerror = () => reject(new Error("Failed to load Pyodide script"));
         });
       }
 
@@ -54,7 +52,6 @@ export default function SentimentDemo() {
       const pythonCode = `
         import json
         import re
-        from math import copysign
 
         LEXICON = {
             "love": 3, "loved": 3, "lovely": 2, "like": 2, "liked": 2,
@@ -74,24 +71,27 @@ export default function SentimentDemo() {
             token_scores = []
             total = 0.0
             count = 0
-            for t in tokens:
-                if t.isalpha():
-                    score = LEXICON.get(t, 0)
+            for token in tokens:
+                if token.isalpha():
+                    score = LEXICON.get(token, 0)
                     if score != 0:
-                        token_scores.append((t, score))
+                        token_scores.append((token, score))
                         total += score
                         count += 1
                     else:
-                        token_scores.append((t, 0))
+                        token_scores.append((token, 0))
                 else:
-                    token_scores.append((t, 0))
+                    token_scores.append((token, 0))
+
             if count == 0:
                 norm = 0.0
             else:
-                max_abs = max(abs(v) for v in LEXICON.values()) or 1
+                max_abs = max(abs(value) for value in LEXICON.values()) or 1
                 norm = total / (max_abs * count)
-                if norm > 1: norm = 1.0
-                if norm < -1: norm = -1.0
+                if norm > 1:
+                    norm = 1.0
+                if norm < -1:
+                    norm = -1.0
 
             if norm > 0.15:
                 label = "positive"
@@ -108,19 +108,19 @@ export default function SentimentDemo() {
 
         def analyze(text):
             return analyze_sentiment(text)
-    `;
+      `;
 
       await pyodide.runPythonAsync(pythonCode);
-
       pyodideRef.current = pyodide;
+
       if (!cancelled) {
         setPyodideLoaded(true);
         setLoadingMessage("");
       }
     }
 
-    loadPyodideAndInit().catch((err) => {
-      console.error("Pyodide load error:", err);
+    loadPyodideAndInit().catch((error) => {
+      console.error("Pyodide load error:", error);
       setLoadingMessage("Failed to load Pyodide. Check console for details.");
     });
 
@@ -130,145 +130,147 @@ export default function SentimentDemo() {
   }, []);
 
   async function runAnalysis(text) {
-    if (!pyodideRef.current) return;
+    if (!pyodideRef.current) {
+      return;
+    }
+
     setResult(null);
     setLoadingMessage("Analyzing text...");
+
     try {
       const py = pyodideRef.current;
       py.globals.set("input_text", text);
-      const pyResult = await py.runPythonAsync(`analyze(input_text)`);
+      const pyResult = await py.runPythonAsync("analyze(input_text)");
       const parsed = JSON.parse(pyResult);
       setResult(parsed);
       setLoadingMessage("");
-    } catch (err) {
-      console.error("Analysis error:", err);
+    } catch (error) {
+      console.error("Analysis error:", error);
       setLoadingMessage("Analysis failed. See console for details.");
     }
   }
 
-  const handleAnalyze = async () => {
+  async function handleAnalyze() {
     await runAnalysis(inputText);
-  };
+  }
 
-  const handleReset = () => {
+  function handleReset() {
     setInputText("");
     setResult(null);
     setLoadingMessage("");
 
     setTimeout(() => {
-      setInputText(defaultText)
+      setInputText(defaultText);
     }, 1500);
-  };
+  }
 
-    async function handleFullAnalyze() {
-    if (!fullText.trim()) return;
+  async function handleFullAnalyze() {
+    if (!fullText.trim()) {
+      return;
+    }
 
     setFullLoading(true);
     setFullResult(null);
     setFullError("");
 
     try {
-      const res = await fetch(`${SENTIMENT_API_URL}/predict_full?version=${fullVersion}`, {
+      const response = await fetch(`${SENTIMENT_API_URL}/predict_full?version=${fullVersion}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: fullText }),
       });
 
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => ({}));
-        throw new Error(errBody.detail || `API error: ${res.status}`);
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.detail || `API error: ${response.status}`);
       }
 
-      const data = await res.json();
+      const data = await response.json();
       setFullResult(data);
-    } catch (err) {
-      console.error("Full pipeline API error:", err);
-      setFullError(err.message || "Full pipeline analysis failed.");
+    } catch (error) {
+      console.error("Full pipeline API error:", error);
+      setFullError(error.message || "Full pipeline analysis failed.");
     } finally {
       setFullLoading(false);
     }
   }
 
-  const handleFullReset = () => {
+  function handleFullReset() {
     setFullText("");
     setFullResult(null);
     setFullError("");
+
     setTimeout(() => {
       setFullText("This product exceeded my expectations!");
     }, 1500);
-  };
-
+  }
 
   return (
     <div className="sentiment-container">
       <h2 className="project-title gradient-text">Sentiment Analysis Demo</h2>
-      <div className='section-underline'></div>
+      <div className="section-underline"></div>
       <p className="sentiment-sub">
         Lightweight Python sentiment analyzer running in your browser via Pyodide.
       </p>
 
-      {/* LIGHT VERSION (Pyodide) */}
       <section className="sentiment-section">
         <h3 className="sentiment-section-title">In-Browser Python Version</h3>
 
         <Suspense fallback={<Spinner />}>
           {!pyodideLoaded && (
-              <div className="sentiment-warning">
-                  <p className="sentiment-warning-text">{loadingMessage}</p>
-              </div>
+            <div className="sentiment-warning">
+              <p className="sentiment-warning-text">{loadingMessage}</p>
+            </div>
           )}
 
           <div className="sentiment-dropdown">
             <label>Light Model Version:</label>
             <select
               value={lightVersion}
-              onChange={(e) => setLightVersion(e.target.value)}
+              onChange={(event) => setLightVersion(event.target.value)}
               className="sentiment-select"
             >
-              <option value="v1">v1 — Basic Lexicon</option>
-              <option value="v2">v2 — Expanded Lexicon</option>
-              <option value="v3">v3 — Negation Handling</option>
+              <option value="v1">v1 - Basic Lexicon</option>
+              <option value="v2">v2 - Expanded Lexicon</option>
+              <option value="v3">v3 - Negation Handling</option>
             </select>
           </div>
 
-          <textarea id="user-input"
-              className="sentiment-textarea"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Type or paste text here..."
+          <textarea
+            id="user-input"
+            className="sentiment-textarea"
+            value={inputText}
+            onChange={(event) => setInputText(event.target.value)}
+            placeholder="Type or paste text here..."
           />
 
           <div className="sentiment-controls">
-              <button onClick={handleAnalyze} disabled={!pyodideLoaded} className={`sentiment-btn ${pyodideLoaded ? "enabled" : "disabled"}`}>
-                  Analyze
-              </button>
-              
-              <button onClick={handleReset} className="sentiment-reset-btn">
-                  Reset
-              </button>
-              
+            <button onClick={handleAnalyze} disabled={!pyodideLoaded} className={`sentiment-btn ${pyodideLoaded ? "enabled" : "disabled"}`}>
+              Analyze
+            </button>
+            <button onClick={handleReset} className="sentiment-reset-btn">
+              Reset
+            </button>
           </div>
 
           {loadingMessage && pyodideLoaded && (
-              <div className="sentiment-loading">{loadingMessage}</div>
+            <div className="sentiment-loading">{loadingMessage}</div>
           )}
 
-          {result 
-              ? (<SentimentCard result={result} />)
-              : (
-                  <div className="sentiment-placeholder">
-                      No analysis yet. Click Analyze to run.
-                  </div>
-              )
-          }
+          {result ? (
+            <SentimentCard result={result} />
+          ) : (
+            <div className="sentiment-placeholder">
+              No analysis yet. Click Analyze to run.
+            </div>
+          )}
 
           <div className="sentiment-note">
-              <strong>Note:</strong> This demo uses a compact lexicon for speed and reproducibility.
+            <strong>Note:</strong> This demo uses a compact lexicon for speed and reproducibility.
           </div>
         </Suspense>
       </section>
 
-      {/* FULL END-TO-END VERSION (Backend API) */}
       <section className="sentiment-section">
         <h3 className="sentiment-section-title">End-to-End Version (Backend Model)</h3>
 
@@ -276,19 +278,19 @@ export default function SentimentDemo() {
           <label>Backend Model Version:</label>
           <select
             value={fullVersion}
-            onChange={(e) => setFullVersion(e.target.value)}
+            onChange={(event) => setFullVersion(event.target.value)}
             className="sentiment-select"
           >
-            <option value="v1">v1 — Baseline ML Model</option>
-            <option value="v2">v2 — Improved Vectorizer</option>
-            <option value="v3">v3 — Fine-tuned Classifier</option>
+            <option value="v1">v1 - Baseline ML Model</option>
+            <option value="v2">v2 - Improved Vectorizer</option>
+            <option value="v3">v3 - Fine-tuned Classifier</option>
           </select>
         </div>
 
         <textarea
           className="sentiment-textarea"
           value={fullText}
-          onChange={(e) => setFullText(e.target.value)}
+          onChange={(event) => setFullText(event.target.value)}
           placeholder="Type or paste text for the backend model..."
         />
 
@@ -341,9 +343,7 @@ export default function SentimentDemo() {
 
             <p>
               <strong>Agreement:</strong>{" "}
-              {result.label === fullResult.sentiment
-                ? "Models agree"
-                : "Models disagree"}
+              {result.label === fullResult.sentiment ? "Models agree" : "Models disagree"}
             </p>
 
             <div className="comparison-bars">
@@ -352,7 +352,7 @@ export default function SentimentDemo() {
                 <div className="bar">
                   <div
                     className="bar-fill"
-                    style={{ width: `${(result.score + 1) * 50}%` }}
+                    style={{ width: `${lightComparisonScore * 100}%` }}
                   />
                 </div>
               </div>
@@ -362,7 +362,7 @@ export default function SentimentDemo() {
                 <div className="bar">
                   <div
                     className="bar-fill"
-                    style={{ width: `${fullResult.confidence * 100}%` }}
+                    style={{ width: `${fullComparisonConfidence * 100}%` }}
                   />
                 </div>
               </div>
@@ -370,7 +370,6 @@ export default function SentimentDemo() {
           </div>
         </section>
       )}
-
     </div>
   );
 }

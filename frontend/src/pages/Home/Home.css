@@ -3,6 +3,8 @@
   padding-bottom: 2rem;
   max-width: 1200px;
   margin: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .project-grid {
@@ -191,7 +193,54 @@ body.dark .section-underline {
   }
 
   .tech-grid-container {
+    grid-template-columns: 1fr;
     gap: 15px;
+  }
+
+  .about-container {
+    padding-top: 4.5rem;
+  }
+
+  .full-screen-hero {
+    min-height: calc(100vh - 4.5rem);
+    height: auto;
+    padding: 2rem 0 !important;
+  }
+
+  .hero-title {
+    font-size: clamp(2.8rem, 16vw, 4.5rem);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1.2rem, 6vw, 1.8rem);
+    line-height: 1.35;
+  }
+
+  .hero-subtext {
+    font-size: 1rem;
+    line-height: 1.7;
+    padding: 0 0.35rem;
+  }
+
+  .aboutMe-title,
+  .project-title,
+  .tech-grid-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .tech-grid-card {
+    padding: 16px;
+  }
+
+  .scroll-arrow {
+    margin-top: 28px;
   }
 }
 

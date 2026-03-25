@@ -206,7 +206,7 @@
 }
 
 .site-chatbot__composer-row input {
-  width: 107%;
+  width: 100%;
   min-width: 0;
   border-radius: 1rem;
   padding: 0.9rem 1rem;
@@ -350,5 +350,19 @@ body.dark .site-chatbot__send-button {
   .site-chatbot__quick-prompts {
     display: grid;
     grid-template-columns: 1fr 1fr;
+  }
+
+  .site-chatbot__composer-row {
+    grid-template-columns: 1fr;
+  }
+
+  .site-chatbot__send-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .site-chatbot__quick-prompts {
+    grid-template-columns: 1fr;
   }
 }

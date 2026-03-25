@@ -6,3 +6,4 @@ const API_ORIGIN =
 
 export const SENTIMENT_API_URL = `${API_ORIGIN}/api/sentiment`;
 export const RAG_API_URL = `${API_ORIGIN}/api/rag`;
+export const CHATBOT_API_URL = `${API_ORIGIN}/api/chatbot`;

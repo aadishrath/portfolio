@@ -99,3 +99,14 @@
   background: rgba(239, 68, 68, 0.08);
   color: #b91c1c;
 }
+
+@media (max-width: 640px) {
+  .rag-answer-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rag-context-card {
+    flex-basis: 100%;
+  }
+}

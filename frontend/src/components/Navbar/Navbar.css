@@ -1,19 +1,16 @@
-/* ---------------------- */
-/* NAVBAR BASE */
-/* ---------------------- */
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  padding: 1rem 2rem;
+  padding: 0.95rem 1.25rem;
   z-index: 1000;
   border-bottom: 1px solid #eaeaea;
   display: flex;
   justify-content: center;
+  backdrop-filter: blur(16px);
 }
 
-/* Desktop nav links */
 .desktop-nav a {
   font-weight: 500;
   text-decoration: none;
@@ -37,20 +34,17 @@
   padding: 0;
 }
 
-.desktop-nav button:hover{
+.desktop-nav button:hover,
+.desktop-nav button:focus,
+.desktop-nav button:active {
   background: none;
 }
 
-.desktop-nav button:focus{
+.desktop-nav button:focus {
   outline: none;
   color: #3494d8;
 }
 
-.desktop-nav button:active{
-  color: #3494d8;
-}
-
-/* Light / Dark Themes */
 body.light .navbar {
   background-color: rgba(255, 255, 255, 0.9);
   color: black;
@@ -61,133 +55,216 @@ body.dark .navbar {
   color: white;
 }
 
-/* ---------------------- */
-/* THEME TOGGLE */
-/* ---------------------- */
 .theme-toggle {
-  width: 50px;
-  height: 26px;
+  width: 102px;
+  height: 34px;
   background: #ccc;
-  border-radius: 20px;
+  border-radius: 999px;
   position: relative;
   cursor: pointer;
   transition: background 0.3s ease;
   display: flex;
   align-items: center;
-  margin-left: 1rem;
+  justify-content: space-between;
+  margin-left: 0.5rem;
+  padding: 0 12px;
 }
 
 .theme-toggle .knob {
-  width: 22px;
-  height: 22px;
+  width: 44px;
+  height: 26px;
   background: white;
-  border-radius: 50%;
+  border-radius: 999px;
   position: absolute;
-  left: 2px;
-  transition: transform 0.3s ease;
+  left: 4px;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
-.theme-toggle .icon {
-  font-size: 0.9rem;
-  position: absolute;
+.theme-toggle-label {
+  position: relative;
+  z-index: 1;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
 }
 
-.theme-toggle .sun {
-  left: 6px;
+.theme-toggle-label--light {
+  transform: translateX(10px);
 }
 
-.theme-toggle .moon {
-  right: 6px;
+.theme-toggle-label--dark {
+  transform: translateX(-10px);
 }
 
-/* ---------------------- */
-/* DESKTOP NAV */
-/* ---------------------- */
-.desktop-nav {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  font-size: 1.1rem;
-  font-weight: 500;
+body.light .theme-toggle {
+  background: rgba(59, 130, 246, 0.18);
 }
 
-/* ---------------------- */
-/* MOBILE TOGGLE BUTTON */
-/* ---------------------- */
-.mobile-toggle {
-  display: none;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 2000;
-}
-
-.mobile-toggle button {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.mobile-toggle img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
-.mobile-toggle svg {
-  width: 28px;
-  height: 28px;
-  color: white;
-}
-
-/* ---------------------- */
-/* MOBILE DRAWER */
-/* ---------------------- */
-.mobile-drawer {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 260px;
-  height: 100vh;
-  background: #111;
-  flex-direction: column;
-  padding: 80px 20px;
-  gap: 20px;
-  transition: transform 0.3s ease-in-out;
-  transform: translateX(-100%);
-  z-index: 1500;
-}
-
-.mobile-drawer.open {
-  display: flex;
+body.light .theme-toggle .knob {
   transform: translateX(0);
 }
 
-.mobile-drawer a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 1.1rem;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+body.dark .theme-toggle {
+  background: rgba(250, 204, 21, 0.18);
 }
 
-.mobile-drawer a:hover {
+body.dark .theme-toggle .knob {
+  transform: translateX(50px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mobile-toggle {
+  display: none;
+  margin-left: auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(148, 163, 184, 0.14);
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  padding: 0;
+  position: relative;
+  z-index: 2001;
+}
+
+.mobile-toggle span {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 999px;
+}
+
+.mobile-toggle span:nth-child(1) {
+  top: 15px;
+}
+
+.mobile-toggle span:nth-child(2) {
+  top: 23px;
+}
+
+.mobile-toggle span:nth-child(3) {
+  top: 31px;
+}
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 1400;
+}
+
+.mobile-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: min(84vw, 320px);
+  height: 100vh;
+  background: #111;
+  flex-direction: column;
+  padding: 1.25rem;
+  gap: 1.25rem;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(-100%);
+  z-index: 1500;
+  display: flex;
+  box-shadow: 24px 0 60px rgba(15, 23, 42, 0.28);
+}
+
+.mobile-drawer.open {
+  transform: translateX(0);
+}
+
+.mobile-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.mobile-close {
+  background: transparent;
+  color: inherit;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  padding: 0.5rem 0.7rem;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.mobile-drawer a,
+.mobile-contact-btn {
+  color: inherit;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  text-align: left;
+}
+
+.mobile-drawer a.active,
+.mobile-drawer a:hover,
+.mobile-contact-btn:hover {
   color: #00bcd4;
 }
 
-/* ---------------------- */
-/* RESPONSIVE BEHAVIOR */
-/* ---------------------- */
+body.light .mobile-toggle,
+body.light .mobile-drawer {
+  color: #0f172a;
+}
+
+body.light .mobile-drawer {
+  background: rgba(255, 255, 255, 0.98);
+}
+
+body.light .mobile-drawer a,
+body.light .mobile-contact-btn {
+  border-bottom-color: rgba(15, 23, 42, 0.08);
+}
+
+body.dark .mobile-toggle,
+body.dark .mobile-drawer {
+  color: #f8fafc;
+}
+
+body.dark .mobile-drawer {
+  background: rgba(2, 6, 23, 0.98);
+}
+
 @media screen and (max-width: 768px) {
+  .navbar {
+    justify-content: flex-end;
+  }
+
   .desktop-nav {
     display: none;
   }
 
   .mobile-toggle {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }

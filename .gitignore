@@ -3,4 +3,5 @@ frontend/dist
 backend/__pycache__
 backend/.venv
 backend/.env
+.tmp-pip
 .DS_Store

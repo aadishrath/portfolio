@@ -1,0 +1,8 @@
+
+// About me
+export const aboutMe = `I’m a <strong>Machine Learning Engineer</strong> with an M.S. in Data Science, specializing in NLP, LLM fine‑tuning, and building production‑ready ML systems. I work across the full ML lifecycle—from data processing and feature engineering to model training, evaluation, and deployment using <strong>Python, SQL, PyTorch, TensorFlow, scikit‑learn, and Hugging Face Transformers</strong>. My recent work includes fine‑tuning DistilBERT on <strong>50k samples (92% accuracy, 0.89 F1)</strong> and developing modular pipelines that accelerate experimentation. I’ve also built <strong>end‑to‑end systems</strong> such as a containerized ML inference service using Flask, Docker, and AWS.\n\n
+I’m experienced with modern MLOps tools including <strong>MLflow, Airflow, and AWS (Lambda, EC2, S3)</strong>, and I enjoy designing scalable pipelines that make models reliable in production. My background in software engineering and frontend development strengthens my ability to build clean, maintainable systems and collaborate across engineering teams.\n\n
+I’m passionate about LLMs, RAG systems, and applied deep learning, and I’m actively building projects around retrieval augmented search and AI copilots. I’m <strong>seeking ML Engineer or Data Engineer</strong> roles where I can contribute to real‑world AI products, optimize models at scale, and continue growing as an engineer.
+`;
+
+export const summary = "ML Engineer skilled in NLP, LLM fine‑tuning, PyTorch, TensorFlow, AWS, and Angular. Experienced in end‑to‑end ML pipelines, deployment, and scalable AI systems.";

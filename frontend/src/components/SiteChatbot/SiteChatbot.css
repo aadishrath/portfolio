@@ -208,6 +208,7 @@
 .site-chatbot__composer-row input {
   width: 100%;
   min-width: 0;
+  box-sizing: border-box;
   border-radius: 1rem;
   padding: 0.9rem 1rem;
   border: 1px solid transparent;

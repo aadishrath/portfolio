@@ -149,6 +149,59 @@
   border-radius: 5px;
 }
 
+body.light .sentiment-btn.enabled {
+  background: linear-gradient(90deg, #2563eb, #9333ea);
+  color: #fff;
+}
+
+body.light .sentiment-btn.enabled:hover {
+  background: linear-gradient(90deg, #1d4ed8, #7e22ce);
+}
+
+body.dark .sentiment-container {
+  color: #f8fafc;
+}
+
+body.dark .sentiment-sub,
+body.dark .sentiment-loading,
+body.dark .sentiment-placeholder,
+body.dark .sentiment-note,
+body.dark .sentiment-dropdown label,
+body.dark .comparison-card p,
+body.dark .comparison-card label {
+  color: #cbd5e1;
+}
+
+body.dark .sentiment-textarea,
+body.dark .sentiment-select {
+  background: rgba(15, 23, 42, 0.9);
+  color: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+body.dark .sentiment-textarea::placeholder {
+  color: #94a3b8;
+}
+
+body.dark .sentiment-btn.enabled {
+  background: linear-gradient(180deg, #facc15, #fb923c);
+  color: #111827;
+}
+
+body.dark .sentiment-btn.enabled:hover {
+  background: linear-gradient(180deg, #fde047, #fb923c);
+}
+
+body.dark .comparison-card {
+  background: rgba(15, 23, 42, 0.88);
+  border-color: rgba(148, 163, 184, 0.22);
+  color: #f8fafc;
+}
+
+body.dark .bar {
+  background: rgba(51, 65, 85, 0.95);
+}
+
 @media (max-width: 768px) {
   .sentiment-container {
     padding: 5rem 1rem 2rem;

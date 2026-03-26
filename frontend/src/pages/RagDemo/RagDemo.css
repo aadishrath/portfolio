@@ -267,6 +267,18 @@ body.dark .rag-empty-state {
   color: #f8fafc;
 }
 
+body.light .rag-primary-button {
+  background: linear-gradient(90deg, #2563eb, #9333ea);
+  color: #fff;
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.22);
+}
+
+body.dark .rag-primary-button {
+  background: linear-gradient(180deg, #facc15, #fb923c);
+  color: #111827;
+  box-shadow: 0 12px 28px rgba(250, 204, 21, 0.2);
+}
+
 @media (max-width: 960px) {
   .rag-demo-hero,
   .rag-demo-summary-grid,

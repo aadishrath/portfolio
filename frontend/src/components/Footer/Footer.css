@@ -25,7 +25,7 @@ input, textarea {
   font-size: 1rem;
 }
 
-button {
+.contact-section button {
   background-color: #0077cc;
   color: white;
   border: none;
@@ -36,7 +36,7 @@ button {
   transition: background 0.3s ease;
 }
 
-button:hover {
+.contact-section button:hover {
   background-color: #005fa3;
 }
 
@@ -82,7 +82,7 @@ button:hover {
   100% { opacity: 0; transform: translateY(10px); }
 }
 
-button {
+.contact-section button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -93,12 +93,37 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+.contact-section button:hover {
   border-color: #646cff;
 }
-button:focus,
-button:focus-visible {
+.contact-section button:focus,
+.contact-section button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+.footer-submit-button {
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.footer-submit-button:hover {
+  transform: translateY(-1px);
+}
+
+body.light .footer-submit-button {
+  background: linear-gradient(90deg, #2563eb, #9333ea);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.22);
+}
+
+body.dark .footer-submit-button {
+  background: linear-gradient(180deg, #facc15, #fb923c);
+  color: #111827;
+  box-shadow: 0 12px 28px rgba(250, 204, 21, 0.2);
 }
 
 @media (max-width: 640px) {

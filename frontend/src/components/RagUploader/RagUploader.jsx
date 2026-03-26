@@ -1,13 +1,51 @@
 import './RagUploader.css';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 export default function RagUploader({ apiUrl, onIngested }) {
   const [files, setFiles] = useState([]);
   const [status, setStatus] = useState('Load the bundled corpus or upload your own markdown, text, or PDF files.');
   const [busy, setBusy] = useState(false);
+  const fileInputRef = useRef(null);
 
-  function onFileChange(event) {
-    setFiles(Array.from(event.target.files || []));
+  async function uploadFiles(selectedFiles) {
+    if (!selectedFiles.length) {
+      setStatus('Choose one or more `.md`, `.txt`, or `.pdf` files before indexing.');
+      return;
+    }
+
+    setBusy(true);
+    setFiles(selectedFiles);
+    setStatus('Uploading files and rebuilding the vector index...');
+
+    const formData = new FormData();
+    selectedFiles.forEach((file) => formData.append('files', file));
+
+    try {
+      const response = await fetch(`${apiUrl}/ingest`, {
+        method: 'POST',
+        body: formData,
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.detail || 'Ingest failed.');
+      }
+
+      setStatus(`Indexed ${payload.ingested_files.length} file(s) across ${payload.chunks_indexed} chunks.`);
+      setFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      onIngested?.();
+    } catch (error) {
+      setStatus(error.message || 'Ingest failed.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onFileChange(event) {
+    const selectedFiles = Array.from(event.target.files || []);
+    await uploadFiles(selectedFiles);
   }
 
   async function handleLoadDemo() {
@@ -22,41 +60,13 @@ export default function RagUploader({ apiUrl, onIngested }) {
       }
 
       setStatus(`Loaded ${payload.ingested_files.length} demo files and indexed ${payload.chunks_indexed} chunks.`);
+      setFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       onIngested?.();
     } catch (error) {
       setStatus(error.message || 'Demo corpus failed to load.');
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handleIngest() {
-    if (!files.length) {
-      setStatus('Choose one or more `.md`, `.txt`, or `.pdf` files before indexing.');
-      return;
-    }
-
-    setBusy(true);
-    setStatus('Uploading files and rebuilding the vector index...');
-
-    const formData = new FormData();
-    files.forEach((file) => formData.append('files', file));
-
-    try {
-      const response = await fetch(`${apiUrl}/ingest`, {
-        method: 'POST',
-        body: formData,
-      });
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload.detail || 'Ingest failed.');
-      }
-
-      setStatus(`Indexed ${payload.ingested_files.length} file(s) across ${payload.chunks_indexed} chunks.`);
-      setFiles([]);
-      onIngested?.();
-    } catch (error) {
-      setStatus(error.message || 'Ingest failed.');
     } finally {
       setBusy(false);
     }
@@ -76,12 +86,20 @@ export default function RagUploader({ apiUrl, onIngested }) {
           {busy ? 'Working...' : 'Load Demo Corpus'}
         </button>
 
-        <label className="rag-file-picker">
-          <span>Select Files</span>
-          <input type="file" accept=".md,.markdown,.txt,.pdf,application/pdf" multiple onChange={onFileChange} />
-        </label>
-
-        <button type="button" className="rag-secondary-button" onClick={handleIngest} disabled={busy}>
+        <input
+          ref={fileInputRef}
+          className="rag-hidden-file-input"
+          type="file"
+          accept=".md,.markdown,.txt,.pdf,application/pdf"
+          multiple
+          onChange={onFileChange}
+        />
+        <button
+          type="button"
+          className="rag-secondary-button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={busy}
+        >
           Index Uploads
         </button>
       </div>

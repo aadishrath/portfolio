@@ -1,23 +1,12 @@
 .rag-upload-actions {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.65rem;
   margin-top: 0.85rem;
 }
 
-.rag-file-picker {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.rag-file-picker input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
+.rag-hidden-file-input {
+  display: none;
 }
 
 .rag-upload-meta {

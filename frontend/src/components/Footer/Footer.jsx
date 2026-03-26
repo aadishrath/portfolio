@@ -44,7 +44,7 @@ const Footer = forwardRef(function Footer(_, ref) {
                             placeholder="Your message" required
                             className="bg-gray-900 text-white p-3 rounded-md border border-gray-600 h-32 resize-none"
                     />
-                    <button type="submit" className="bg-white text-black font-semibold py-2 px-4 rounded-md hover:bg-gray-200 transition">
+                    <button type="submit" className="footer-submit-button">
                         Send Message
                     </button>
                 </form>

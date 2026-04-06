@@ -275,9 +275,9 @@ export const feProjects = [
   },
   {
     icon: '🌐',
-    title: 'Personal Portfolio Website',
+    title: 'Personal Portfolio Website (Old)',
     link: 'https://aadishrath.github.io',
-    description: 'A responsive and modern personal portfolio website built with React and Tailwind CSS to showcase projects and skills.',
+    description: 'A responsive and modern personal portfolio website built with React and Tailwind CSS to showcase projects and skills. This is old version of the portfolio.',
     repo: 'https://github.com/aadishrath/aadishrath.github.io',
     details: `
     # My Portfolio

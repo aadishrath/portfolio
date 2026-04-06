@@ -1,21 +1,7 @@
-import { useEffect, useState } from 'react';
-import RagUploader from '../../components/RagUploader/RagUploader';
+import { useEffect, useRef, useState } from 'react';
 import RagChat from '../../components/RagChat/RagChat';
 import { RAG_API_URL } from '../../lib/api';
 import './RagDemo.css';
-
-const stackHighlights = [
-  'React 19 + Vite frontend integrated into the portfolio',
-  'FastAPI retrieval service with upload, indexing, and query endpoints',
-  'Sentence-Transformers embeddings with FAISS and optional pgvector retrieval',
-  'Optional OpenAI Responses API synthesis for grounded final answers',
-];
-
-const employerSignals = [
-  'Grounded citations and chunk-level retrieval diagnostics',
-  'Hybrid semantic + lexical reranking instead of pure keyword search',
-  'Portfolio-native product design instead of a notebook-only demo',
-];
 
 export default function RagDemo() {
   const [systemStatus, setSystemStatus] = useState({
@@ -25,7 +11,15 @@ export default function RagDemo() {
     source_count: 0,
     chunks_indexed: 0,
     sources: [],
+    suggested_questions: [],
   });
+  const [uploadStatus, setUploadStatus] = useState(
+    'Load the bundled corpus or upload your own markdown, text, or PDF files.',
+  );
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [busy, setBusy] = useState(false);
+  const [resetVersion, setResetVersion] = useState(0);
+  const fileInputRef = useRef(null);
 
   async function refreshStatus() {
     try {
@@ -40,7 +34,93 @@ export default function RagDemo() {
         source_count: 0,
         chunks_indexed: 0,
         sources: [],
+        suggested_questions: [],
       });
+    }
+  }
+
+  async function uploadFiles(filesToUpload) {
+    if (!filesToUpload.length) {
+      setUploadStatus('Choose one or more `.md`, `.txt`, or `.pdf` files before indexing.');
+      return;
+    }
+
+    setBusy(true);
+    setSelectedFiles(filesToUpload);
+    setUploadStatus('Uploading files and rebuilding the vector index...');
+
+    const formData = new FormData();
+    filesToUpload.forEach((file) => formData.append('files', file));
+
+    try {
+      const response = await fetch(`${RAG_API_URL}/ingest`, {
+        method: 'POST',
+        body: formData,
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.detail || 'Ingest failed.');
+      }
+
+      setUploadStatus(`Indexed ${payload.ingested_files.length} file(s) across ${payload.chunks_indexed} chunks.`);
+      setSelectedFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      await refreshStatus();
+    } catch (error) {
+      setUploadStatus(error.message || 'Ingest failed.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleLoadDemo() {
+    setBusy(true);
+    setUploadStatus('Loading demo corpus and rebuilding the vector index...');
+
+    try {
+      const response = await fetch(`${RAG_API_URL}/load_demo`, { method: 'POST' });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.detail || 'Demo corpus failed to load.');
+      }
+
+      setUploadStatus(`Loaded ${payload.ingested_files.length} demo files and indexed ${payload.chunks_indexed} chunks.`);
+      setSelectedFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      await refreshStatus();
+    } catch (error) {
+      setUploadStatus(error.message || 'Demo corpus failed to load.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleResetRag() {
+    setBusy(true);
+    setUploadStatus('Resetting corpus, prompts, and conversation...');
+
+    try {
+      const response = await fetch(`${RAG_API_URL}/reset`, { method: 'POST' });
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.detail || 'Reset failed.');
+      }
+
+      setSelectedFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      setResetVersion((current) => current + 1);
+      setUploadStatus('Corpus cleared. Upload a file or load the demo corpus to begin again.');
+      await refreshStatus();
+    } catch (error) {
+      setUploadStatus(error.message || 'Reset failed.');
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -52,7 +132,6 @@ export default function RagDemo() {
     <div className="rag-demo-page">
       <section className="rag-demo-hero">
         <div className="rag-demo-hero-copy">
-          <span className="rag-demo-eyebrow  gradient-text">Portfolio-grade retrieval system</span>
           <h2 className="project-title gradient-text">Interactive RAG Assistant</h2>
           <div className="section-underline"></div>
           <p className="rag-demo-subtitle">
@@ -86,80 +165,55 @@ export default function RagDemo() {
               <strong>{systemStatus.source_count}</strong>
             </div>
           </div>
+
+          <input
+            ref={fileInputRef}
+            className="rag-hidden-file-input"
+            type="file"
+            accept=".md,.markdown,.txt,.pdf,application/pdf"
+            multiple
+            onChange={(event) => uploadFiles(Array.from(event.target.files || []))}
+          />
+
+          <div className="rag-upload-actions rag-hero-actions">
+            <button type="button" className="rag-primary-button" onClick={handleLoadDemo} disabled={busy}>
+              {busy ? 'Working...' : 'Load Demo Corpus'}
+            </button>
+            <button
+              type="button"
+              className="rag-secondary-button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={busy}
+            >
+              Index Uploads
+            </button>
+          </div>
+
+          <div className="rag-upload-meta rag-hero-upload-meta">
+            <p className="rag-upload-status">{uploadStatus}</p>
+            {selectedFiles.length > 0 && (
+              <div className="rag-selected-files">
+                {selectedFiles.map((file) => (
+                  <span key={`${file.name}-${file.size}`} className="rag-source-chip">
+                    {file.name}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="rag-demo-summary-grid">
-        <article className="rag-summary-card">
-          <h3>Stack chosen for 2026-style AI roles</h3>
-          <ul>
-            {stackHighlights.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </article>
-
-        <article className="rag-summary-card">
-          <h3>Why this stands out on a resume</h3>
-          <ul>
-            {employerSignals.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </article>
-
-        <article className="rag-summary-card rag-usage-card">
-          <h3>How to use this demo</h3>
-          <ol>
-            <li>Load the demo corpus or upload your own markdown, text, or PDF files.</li>
-            <li>Wait for the index status to confirm how many chunks were created.</li>
-            <li>Ask a specific question and inspect the retrieved source cards below the answer.</li>
-          </ol>
-        </article>
-      </section>
-
-      <section className="rag-workbench">
-        <aside className="rag-sidebar">
-          <RagUploader apiUrl={RAG_API_URL} onIngested={refreshStatus} />
-
-          <article className="rag-panel rag-system-panel">
-            <div className="rag-panel-header">
-              <div>
-                <h3>Corpus status</h3>
-                <p>The backend keeps a local vector index for uploaded markdown, text, and PDF documents.</p>
-              </div>
-              <button type="button" className="rag-secondary-button" onClick={refreshStatus}>
-                Refresh
-              </button>
-            </div>
-
-            <div className="rag-system-list">
-              <div>
-                <span>Ready for queries</span>
-                <strong>{systemStatus.ready ? 'Yes' : 'Not yet'}</strong>
-              </div>
-              <div>
-                <span>API status</span>
-                <strong>{systemStatus.status === 'ok' ? 'Healthy' : 'Unavailable'}</strong>
-              </div>
-            </div>
-
-            <div className="rag-source-list">
-              {(systemStatus.sources || []).length ? (
-                systemStatus.sources.map((source) => (
-                  <span key={source} className="rag-source-chip">
-                    {source}
-                  </span>
-                ))
-              ) : (
-                <p className="rag-muted-copy">Load the demo corpus or upload your own files to populate the index.</p>
-              )}
-            </div>
-          </article>
-        </aside>
-
-        <section className="rag-chat-shell">
-          <RagChat apiUrl={RAG_API_URL} systemStatus={systemStatus} />
+      <section className="rag-workbench rag-workbench--full">
+        <section className="rag-chat-shell rag-chat-shell--scrollable">
+          <RagChat
+            apiUrl={RAG_API_URL}
+            systemStatus={systemStatus}
+            suggestedQuestions={systemStatus.suggested_questions || []}
+            onReset={handleResetRag}
+            resetVersion={resetVersion}
+            resetDisabled={busy}
+          />
         </section>
       </section>
     </div>

@@ -14,8 +14,7 @@
 
 .rag-demo-hero-copy,
 .rag-panel,
-.rag-hero-status-card,
-.rag-summary-card {
+.rag-hero-status-card {
   border-radius: 20px;
   border: 1px solid rgba(148, 163, 184, 0.22);
   backdrop-filter: blur(10px);
@@ -40,11 +39,18 @@
   margin: 0;
   font-size: 1rem;
   line-height: 1.7;
-  max-width: 60ch;
 }
 
 .rag-hero-status-card {
   padding: 1.5rem;
+}
+
+.rag-hero-actions {
+  margin-top: 1.1rem;
+}
+
+.rag-hero-upload-meta {
+  margin-top: 0.85rem;
 }
 
 .rag-status-row,
@@ -68,11 +74,9 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.85rem;
-  margin-top: 1.25rem;
 }
 
 .rag-status-grid div,
-.rag-summary-card,
 .rag-panel {
   padding: 1.25rem;
 }
@@ -113,54 +117,36 @@
   color: #b91c1c;
 }
 
-.rag-demo-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.rag-summary-card h3,
 .rag-panel h3 {
   margin: 0 0 0.5rem;
   font-size: 1.05rem;
 }
 
-.rag-summary-card p,
 .rag-panel p {
   margin: 0;
   line-height: 1.6;
 }
 
-.rag-summary-card ul {
-  margin: 0.75rem 0 0;
-  padding-left: 1.1rem;
-}
-
-.rag-summary-card ol {
-  margin: 0.75rem 0 0;
-  padding-left: 1.2rem;
-}
-
-.rag-summary-card li + li {
-  margin-top: 0.55rem;
-}
-
-.rag-usage-card li {
-  line-height: 1.6;
-}
-
 .rag-workbench {
   display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1.4fr);
   gap: 1rem;
 }
 
-.rag-sidebar,
 .rag-chat-shell {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.rag-workbench--full {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.rag-chat-shell--scrollable {
+  max-height: calc(100vh - 13rem);
+  overflow-y: auto;
+  padding-right: 0.35rem;
 }
 
 .rag-system-list {
@@ -228,22 +214,18 @@
 
 body.light .rag-demo-hero-copy,
 body.light .rag-panel,
-body.light .rag-hero-status-card,
-body.light .rag-summary-card {
+body.light .rag-hero-status-card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.96));
 }
 
 body.dark .rag-demo-hero-copy,
 body.dark .rag-panel,
-body.dark .rag-hero-status-card,
-body.dark .rag-summary-card {
+body.dark .rag-hero-status-card {
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.94));
   border-color: rgba(148, 163, 184, 0.16);
 }
 
 body.dark .rag-demo-subtitle,
-body.dark .rag-summary-card p,
-body.dark .rag-summary-card li,
 body.dark .rag-panel p,
 body.dark .rag-status-grid p,
 body.dark .rag-chat-meta span,
@@ -279,9 +261,34 @@ body.dark .rag-primary-button {
   box-shadow: 0 12px 28px rgba(250, 204, 21, 0.2);
 }
 
+.rag-hidden-file-input {
+  display: none;
+}
+
+.rag-upload-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0;
+}
+
+.rag-upload-meta,
+.rag-corpus-meta,
+.rag-hero-upload-meta {
+  margin-top: 0.75rem;
+}
+
+.rag-upload-status {
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
+body.dark .rag-upload-status {
+  color: #cbd5e1;
+}
+
 @media (max-width: 960px) {
   .rag-demo-hero,
-  .rag-demo-summary-grid,
   .rag-workbench {
     grid-template-columns: 1fr;
   }
@@ -310,5 +317,9 @@ body.dark .rag-primary-button {
   .rag-file-picker {
     width: 100%;
     justify-content: center;
+  }
+
+  .rag-upload-actions {
+    grid-template-columns: 1fr;
   }
 }

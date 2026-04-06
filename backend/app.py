@@ -1,3 +1,4 @@
+import importlib
 import os
 import re
 from io import BytesIO
@@ -34,113 +35,14 @@ app.add_middleware(
 
 
 TOKEN_RE = re.compile(r"[a-zA-Z']+")
-
-PROFILE = {
-    "name": "Aadish Rathore",
-    "title": "ML Engineer | Angular Developer",
-    "intro": (
-        "I build user-facing products that blend thoughtful frontend engineering "
-        "with practical machine learning workflows."
-    ),
-    "about": [
-        (
-            "My work sits at the intersection of frontend development, data science, "
-            "and applied AI. I enjoy turning technical systems into products that "
-            "feel clear, reliable, and useful."
-        ),
-        (
-            "This version of the portfolio is intentionally split into a "
-            "Vercel-hosted frontend and a Render-hosted backend so it stays "
-            "simple, inexpensive, and easy to evolve."
-        )
-    ],
-    "highlights": [
-        "Frontend engineering with React, Angular, and modern UI systems",
-        "Applied NLP and ML workflows, including sentiment analysis and retrieval-augmented systems",
-        "API integration, deployment setup, and end-to-end product thinking"
-    ],
-    "links": {
-        "github": "https://github.com/aadishrath",
-        "linkedin": "https://www.linkedin.com/in/aadishrath"
-    }
-}
-
-PROJECTS = [
-    {
-        "id": "ml-sentiment",
-        "title": "Sentiment Analysis",
-        "summary": "A modular NLP experience that now includes both in-browser and backend-backed analysis demos.",
-        "stack": ["Python", "FastAPI", "NLP"],
-        "href": "https://github.com/aadishrath/sentimentAnalysis"
-    },
-    {
-        "id": "ml-rag",
-        "title": "RAG Playground",
-        "summary": "A retrieval demo with demo-corpus loading, source inspection, and grounded answer cards.",
-        "stack": ["FastAPI", "RAG", "Vector Search"],
-        "href": "https://github.com/aadishrath/aadishrath.github.io"
-    },
-    {
-        "id": "portfolio",
-        "title": "Portfolio Platform",
-        "summary": "A portfolio experience ported from GitHub Pages into a Vercel frontend and Render backend setup.",
-        "stack": ["React", "Vite", "FastAPI", "Vercel", "Render"],
-        "href": "https://github.com/aadishrath/portfolio"
-    }
-]
-
-SENTIMENT_LEXICON = {
-    "love": 3,
-    "loved": 3,
-    "great": 3,
-    "good": 2,
-    "excellent": 4,
-    "amazing": 4,
-    "awesome": 4,
-    "delightful": 3,
-    "happy": 2,
-    "pleasant": 2,
-    "fast": 2,
-    "intuitive": 2,
-    "easy": 2,
-    "best": 3,
-    "exceeded": 3,
-    "reliable": 2,
-    "grounded": 1,
-    "bad": -2,
-    "terrible": -3,
-    "awful": -3,
-    "hate": -3,
-    "slow": -2,
-    "bug": -2,
-    "bugs": -2,
-    "frustrating": -3,
-    "confusing": -2,
-    "hard": -2,
-    "difficult": -2,
-    "disappointing": -3,
-    "poor": -2,
-    "worst": -3,
-}
-
-NEGATIONS = {"not", "never", "no", "hardly"}
-
-DEMO_CORPUS = {
-    "portfolio_overview.md": """
-The portfolio is a React 19 and Vite application deployed on Vercel with a FastAPI backend on Render.
-It highlights Aadish Rathore's machine learning work, frontend engineering background, and recruiter-facing product polish.
-The app includes routed portfolio pages, a site chatbot, project modals, and interactive demos.
-""".strip(),
-    "rag_architecture.md": """
-The RAG demo uses a portfolio-native user experience with upload flows, retrieval diagnostics, and grounded answer cards.
-In a production version, the backend can chunk documents, generate embeddings, index vectors, rerank candidates, and synthesize grounded answers.
-This lightweight Render deployment keeps an in-memory corpus so the UI still demonstrates ingestion, querying, and source inspection.
-""".strip(),
-    "sentiment_demo.md": """
-The sentiment page compares an in-browser Python model loaded with Pyodide against a backend model exposed through FastAPI.
-This makes the portfolio more interactive while still explaining the difference between lightweight browser inference and end-to-end deployed inference.
-""".strip(),
-}
+SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
+CONTENT_STORE = importlib.import_module("content_store")
+STOPWORDS = CONTENT_STORE.STOPWORDS
+PROFILE = CONTENT_STORE.PROFILE
+PROJECTS = CONTENT_STORE.PROJECTS
+SENTIMENT_LEXICON = CONTENT_STORE.SENTIMENT_LEXICON
+NEGATIONS = CONTENT_STORE.NEGATIONS
+DEMO_CORPUS = CONTENT_STORE.DEMO_CORPUS
 
 RAG_STATE = {
     "sources": {},
@@ -301,12 +203,15 @@ def chunk_text(source: str, text: str) -> List[dict]:
 
     chunks = []
     for index, paragraph in enumerate(paragraphs, start=1):
+        quality = assess_chunk_quality(paragraph)
         chunks.append(
             {
                 "chunk_id": f"{source}-{index}",
                 "source": source,
+                "chunk_index": index,
                 "text": paragraph,
                 "tokens": set(tokenize(paragraph)),
+                "quality": quality,
             }
         )
     return chunks
@@ -393,6 +298,7 @@ def rebuild_rag_index(source_map: dict):
 
 
 def get_rag_status():
+    suggested_questions = build_suggested_questions(RAG_STATE["sources"]) if RAG_STATE["chunks"] else []
     return {
         "status": "ok",
         "ready": bool(RAG_STATE["chunks"]),
@@ -401,6 +307,7 @@ def get_rag_status():
         "source_count": len(RAG_STATE["sources"]),
         "chunks_indexed": len(RAG_STATE["chunks"]),
         "sources": sorted(RAG_STATE["sources"].keys()),
+        "suggested_questions": suggested_questions,
     }
 
 
@@ -415,6 +322,112 @@ def score_chunk(query_tokens: set, chunk: dict) -> tuple[float, float, float]:
     return combined, round(semantic_score, 3), round(lexical_score, 3)
 
 
+def split_sentences(text: str) -> List[str]:
+    return [sentence.strip() for sentence in SENTENCE_SPLIT_RE.split(compact_whitespace(text)) if sentence.strip()]
+
+
+def get_source_label(source: str) -> str:
+    name, _ = os.path.splitext(source)
+    label = re.sub(r"[_\-]+", " ", name).strip()
+    return label.title() if label else source
+
+
+def extract_key_terms(text: str, limit: int = 3) -> List[str]:
+    counts = {}
+    for token in tokenize(text):
+        if len(token) < 4 or token in STOPWORDS:
+            continue
+        counts[token] = counts.get(token, 0) + 1
+    ranked = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    return [term for term, _ in ranked[:limit]]
+
+
+def assess_chunk_quality(text: str) -> dict:
+    normalized = compact_whitespace(text)
+    tokens = tokenize(normalized)
+    word_count = len(tokens)
+    unique_ratio = (len(set(tokens)) / word_count) if word_count else 0.0
+    sentences = split_sentences(normalized)
+    sentence_count = max(1, len(sentences))
+    avg_sentence_words = word_count / sentence_count if sentence_count else word_count
+
+    length_score = min(1.0, word_count / 70) if word_count else 0.0
+    diversity_score = min(1.0, unique_ratio / 0.75) if word_count else 0.0
+    structure_score = 1.0 if re.search(r"[.!?]$", normalized) else 0.65
+    density_penalty = 0.0
+    if avg_sentence_words < 6:
+        density_penalty += 0.12
+    if avg_sentence_words > 38:
+        density_penalty += 0.08
+
+    score = max(0.0, min(1.0, (length_score * 0.4) + (diversity_score * 0.35) + (structure_score * 0.25) - density_penalty))
+
+    if score >= 0.8:
+        label = "high"
+    elif score >= 0.6:
+        label = "medium"
+    else:
+        label = "low"
+
+    reasons = []
+    if word_count < 25:
+        reasons.append("short chunk")
+    elif word_count > 140:
+        reasons.append("long chunk")
+    else:
+        reasons.append("healthy length")
+
+    reasons.append("clear sentence boundaries" if structure_score >= 1.0 else "partial sentence structure")
+    reasons.append("good term variety" if diversity_score >= 0.7 else "repetitive wording")
+
+    return {
+        "score": round(score, 3),
+        "label": label,
+        "reasons": reasons,
+        "word_count": word_count,
+    }
+
+
+def build_suggested_questions(source_map: dict) -> List[str]:
+    if not source_map:
+        return [
+            "What are the main themes in this corpus?",
+            "Summarize the most important points from the indexed documents.",
+            "Which sources look most relevant for answering detailed questions?",
+        ]
+
+    questions = []
+    for source, text in list(source_map.items())[:2]:
+        label = get_source_label(source)
+        questions.append(f"Summarize the main ideas in {label}.")
+
+        key_terms = extract_key_terms(text, limit=2)
+        for term in key_terms:
+            questions.append(f"What does the corpus say about {term}?")
+
+    if len(source_map) > 1:
+        questions.append("How do the indexed sources connect to each other?")
+
+    deduped = []
+    seen = set()
+    for question in questions:
+        lowered = question.lower()
+        if lowered in seen:
+            continue
+        seen.add(lowered)
+        deduped.append(question)
+    return deduped[:4]
+
+
+def format_source_attribution(context: dict, index: int) -> dict:
+    return {
+        "id": index,
+        "source": context["source"],
+        "label": f"[{index}] {context['source']} (chunk {context['chunk_index']})",
+        "chunk_id": context["chunk_id"],
+    }
+
+
 def build_answer(query: str, contexts: List[dict]) -> str:
     if not contexts:
         return (
@@ -422,14 +435,30 @@ def build_answer(query: str, contexts: List[dict]) -> str:
             "Load the demo corpus or upload files first, then try a more specific question."
         )
 
-    source_list = ", ".join(context["source"] for context in contexts[:3])
-    lead = contexts[0]["preview"]
-    return (
-        f"Based on the indexed corpus, the strongest match points to **{source_list}**.\n\n"
-        f"Top evidence: {lead}\n\n"
-        "This Render-hosted demo uses lightweight in-memory retrieval so the portfolio UX stays interactive "
-        "without requiring a heavier vector database in this repo."
+    answer_lines = [
+        f"For **{query}**, the strongest grounded evidence comes from these indexed chunks:",
+        "",
+    ]
+
+    for index, context in enumerate(contexts[:3], start=1):
+        lead_sentence = split_sentences(context["preview"])[0] if split_sentences(context["preview"]) else context["preview"]
+        answer_lines.append(
+            f"{index}. {lead_sentence} [{index}]"
+        )
+
+    answer_lines.extend(
+        [
+            "",
+            "Sources:",
+        ]
     )
+
+    for index, context in enumerate(contexts[:3], start=1):
+        answer_lines.append(
+            f"- [{index}] {context['source']} (chunk {context['chunk_index']}, quality {context['quality_label']}, score {context['score']})"
+        )
+
+    return "\n".join(answer_lines)
 
 
 def score_chatbot_document(query_tokens: set, query_lower: str, pathname: str, doc: dict) -> int:
@@ -708,6 +737,16 @@ def rag_load_demo():
     }
 
 
+@app.post("/api/rag/reset")
+def rag_reset():
+    rebuild_rag_index({})
+    return {
+        "status": "ok",
+        "ingested_files": [],
+        "chunks_indexed": 0,
+    }
+
+
 @app.post("/api/rag/ingest")
 async def rag_ingest(files: List[UploadFile] = File(...)):
     updated_sources = dict(RAG_STATE["sources"])
@@ -753,21 +792,30 @@ def rag_query(payload: RagQueryPayload):
             {
                 "chunk_id": chunk["chunk_id"],
                 "source": chunk["source"],
+                "chunk_index": chunk["chunk_index"],
                 "preview": chunk["text"][:280],
                 "score": score,
                 "semantic_score": semantic_score,
                 "lexical_score": lexical_score,
+                "quality_score": chunk["quality"]["score"],
+                "quality_label": chunk["quality"]["label"],
+                "quality_reasons": chunk["quality"]["reasons"],
+                "word_count": chunk["quality"]["word_count"],
+                "attribution": f"{chunk['source']} chunk {chunk['chunk_index']}",
             }
         )
 
     scored_contexts.sort(key=lambda item: item["score"], reverse=True)
     contexts = scored_contexts[: max(1, payload.top_k)]
+    source_attributions = [format_source_attribution(context, index) for index, context in enumerate(contexts, start=1)]
 
     return {
         "answer": build_answer(payload.query, contexts),
         "answer_mode": "demo-retrieval",
         "contexts": contexts,
+        "sources": source_attributions,
         "retrieval": {
             "top_k": payload.top_k,
+            "matched_chunks": len(scored_contexts),
         },
     }

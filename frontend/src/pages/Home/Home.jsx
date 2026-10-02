@@ -12,9 +12,10 @@ export default function Home() {
       <section className="hero-intro full-screen-hero" id='first-section'>
         <h1 className="hero-title gradient-text">Aadish Rathore</h1>
         <h3 className="hero-subtitle">ML Engineer | Angular Developer</h3>
-        <p className="hero-subtext">
-            {summary}
-        </p>
+        <p
+          className="hero-subtext"
+          dangerouslySetInnerHTML={{ __html: summary }}
+        />
 
         <div className="scroll-arrow"
           onClick={() => {document.getElementById("empty-section").scrollIntoView({behavior: "smooth"});}}

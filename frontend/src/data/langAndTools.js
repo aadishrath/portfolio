@@ -14,7 +14,7 @@ export const buckets = [
   {
     title: 'Frontend & Web',
     icon: 'FaLaptopCode',
-    items: ['React 19', 'Angular 17', 'Vite', 'React Router', 'Client-side Chat UX'],
+    items: ['React 19', 'Angular v16+', 'Next.js', 'TypeScript', 'JavaScript'],
   },
   {
     title: 'Backend & APIs',

@@ -1,0 +1,16 @@
+{
+  "name": "Aadish Rathore",
+  "title": "Frontend Engineer | AI Frontend Engineer",
+  "summary": "Frontend Engineer with 6 years of Angular experience, building responsive, accessible interfaces with Angular, React, Next.js, and TypeScript. I bring AI features into clear, useful product experiences.",
+  "about": [
+    "I’m a Frontend Engineer and AI Frontend Engineer with 6 years of Angular experience and an M.S. in Data Science. My focus is building interfaces that are clear, responsive, accessible, and easy to use.",
+    "I work with Angular v16+, standalone components, signals, React, Next.js, TypeScript, and JavaScript. I connect thoughtful interface design with reusable components, state management, and API integration.",
+    "My data science background helps me bring AI into the frontend: copilots, conversational interfaces, and model-backed workflows. I focus on how people interact with these features, including loading states, feedback, and clear user controls.",
+    "I’m seeking Frontend Engineer and AI Frontend Engineer roles where I can build modern web products and make intelligent features useful to the people using them."
+  ],
+  "seeking": "Frontend Engineer and AI Frontend Engineer roles",
+  "email": "adib.rathore@gmail.com",
+  "linkedin": "https://www.linkedin.com/in/adirathore/",
+  "github": "https://github.com/aadishrath",
+  "resume": "/AadishRathore.pdf"
+}

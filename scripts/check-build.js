@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+const dist = path.resolve('dist');
+const manifest = JSON.parse(fs.readFileSync(path.join(dist, 'site.webmanifest'), 'utf8'));
+for (const icon of manifest.icons) assert.ok(fs.existsSync(path.join(dist, icon.src.slice(1))), `Missing manifest icon: ${icon.src}`);
+for (const filename of ['favicon.svg', 'icons/favicon-96x96.png', 'icons/apple-touch-icon.png', 'AadishRathore.pdf']) assert.ok(fs.existsSync(path.join(dist, filename)), `Missing public asset: ${filename}`);
+const html = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
+assert.ok(!html.includes('aadishrath.github.io'), 'Stale social URL');
+const assets = fs.readdirSync(path.join(dist, 'assets'));
+for (const file of assets.filter(file => file.endsWith('.js'))) assert.ok(fs.statSync(path.join(dist, 'assets', file)).size < 500000, `JavaScript chunk too large: ${file}`);
+for (const file of assets.filter(file => file.endsWith('.css'))) assert.ok(!fs.readFileSync(path.join(dist, 'assets', file), 'utf8').includes('@tailwind'), 'Unprocessed Tailwind directives');
+console.log('Production assets, manifest icons, metadata, and bundle budget verified.');

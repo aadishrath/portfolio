@@ -1,0 +1,6 @@
+.project-card { display: flex; flex-direction: column; border: 1px solid #888; padding: 1.5rem; border-radius: 12px; scroll-margin-top: 6rem; }
+.project-card h2 { font-size: 1.3rem; margin-top: 0; }
+.project-card p { line-height: 1.7; }
+.project-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1rem; }
+.project-actions button { padding: .7rem 1rem; cursor: pointer; border-radius: 8px; border: 1px solid transparent; color: var(--accent-text); background-image: var(--accent-gradient); background-size: 180% 180%; }
+.project-actions a { color: inherit; text-underline-offset: .2em; }

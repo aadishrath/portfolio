@@ -1,0 +1,68 @@
+[
+  {
+    "title": "Frontend Engineering",
+    "icon": "FaLaptopCode",
+    "items": [
+      "Angular v16+ & Signals",
+      "React 19",
+      "Next.js",
+      "TypeScript & JavaScript",
+      "Responsive UI & Accessibility"
+    ]
+  },
+  {
+    "title": "AI Product Interfaces",
+    "icon": "FaRobot",
+    "items": [
+      "AI Copilots",
+      "Conversational Interfaces",
+      "LLM & API Integration",
+      "RAG Workflows",
+      "Python & Data Science"
+    ]
+  },
+  {
+    "title": "Dev Tools & Platforms",
+    "icon": "FaChartBar",
+    "items": [
+      "Git & GitHub",
+      "PostgreSQL",
+      "Node.js",
+      "ESLint",
+      "VS Code"
+    ]
+  },
+  {
+    "title": "Backend & APIs",
+    "icon": "FaTools",
+    "items": [
+      "FastAPI",
+      "Pydantic",
+      "Python",
+      "REST APIs",
+      "PDF Ingestion"
+    ]
+  },
+  {
+    "title": "Machine Learning",
+    "icon": "FaBrain",
+    "items": [
+      "Scikit-learn",
+      "TF-IDF",
+      "SVM",
+      "RAG",
+      "LLMs"
+    ]
+  },
+  {
+    "title": "Frameworks & Libraries",
+    "icon": "FaCogs",
+    "items": [
+      "PyTorch",
+      "TensorFlow",
+      "Hugging Face",
+      "pypdf",
+      "React Icons"
+    ]
+  }
+]

@@ -1,0 +1,6 @@
+.contact-section { background: #111; color: #fff; padding: 3rem 1.25rem; text-align: center; }
+.contact-section h2 { font-size: 2rem; }
+.contact-section .action-link { margin: 1rem auto 2rem; overflow-wrap: anywhere; }
+.contact-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; }
+.contact-links a { display: inline-flex; align-items: center; gap: .5rem; color: inherit; }
+.contact-section > p:last-child { margin-top: 2rem; }

@@ -1,7 +1,7 @@
-frontend/node_modules
-frontend/dist
-backend/__pycache__
-backend/.venv
-backend/.env
-.tmp-pip
+/node_modules/
+/dist/
+**/.env*
+!**/.env.example
+/playwright-report/
+/test-results/
 .DS_Store

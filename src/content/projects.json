@@ -1,0 +1,72 @@
+[
+  {
+    "icon": "🏡",
+    "title": "House Price Prediction",
+    "description": "This project builds and evaluates multiple machine learning models to predict house prices based on various features.",
+    "repo": "https://github.com/aadishrath/housePrediction",
+    "category": "ml",
+    "id": "house-price-prediction",
+    "focus": "Supporting work in applied machine learning",
+    "detailsFile": "house-price-prediction.md"
+  },
+  {
+    "icon": "📊",
+    "title": "Logistic regression for predictions",
+    "description": "The project is built and trained using logistic regression model using TensorFlow, PyTorch and Scikit-Learn library.",
+    "repo": "https://github.com/aadishrath/MatchPredictor",
+    "category": "ml",
+    "id": "logistic-regression-for-predictions",
+    "focus": "Supporting work in applied machine learning",
+    "detailsFile": "logistic-regression-for-predictions.md"
+  },
+  {
+    "icon": "🏦",
+    "title": "AdiBank Copilot",
+    "link": "https://adibanking-copilot.vercel.app/",
+    "description": "A responsive Next.js banking interface with role-based experiences, account dashboards, financial analytics, and a banking assistant with explicit action confirmation.",
+    "repo": "https://github.com/aadishrath/adibanking-copilot",
+    "category": "frontend",
+    "id": "adibank-copilot",
+    "stack": [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "Supabase"
+    ],
+    "focus": "AI frontend workflows, responsive dashboards, and clear user controls",
+    "detailsFile": "adibank-copilot.md"
+  },
+  {
+    "id": "frontend-engineering-portfolio",
+    "icon": "✦",
+    "title": "Frontend Engineering Portfolio",
+    "category": "frontend",
+    "description": "A React portfolio focused on responsive interfaces, accessible interactions, reusable components, and a consistent theme system.",
+    "repo": "https://github.com/aadishrath/portfolio",
+    "stack": [
+      "React 19",
+      "Vite",
+      "CSS",
+      "Playwright"
+    ],
+    "focus": "Frontend architecture, accessibility, and interaction design",
+    "detailsFile": "frontend-engineering-portfolio.md"
+  },
+  {
+    "icon": "🌐",
+    "title": "Personal Portfolio Website (Old)",
+    "link": "https://aadishrath.github.io",
+    "description": "A responsive and modern personal portfolio website built with React and Tailwind CSS to showcase projects and skills. This is old version of the portfolio.",
+    "repo": "https://github.com/aadishrath/aadishrath.github.io",
+    "category": "frontend",
+    "id": "personal-portfolio-website-old",
+    "stack": [
+      "React",
+      "Vite",
+      "Tailwind CSS"
+    ],
+    "focus": "Earlier frontend portfolio and component design",
+    "detailsFile": "personal-portfolio-website-old.md"
+  }
+]

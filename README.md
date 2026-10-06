@@ -1,154 +1,84 @@
 # Aadish Portfolio
 
-A full-stack portfolio platform built to showcase frontend engineering, applied ML, and recruiter-friendly product thinking in one deployable project.
+A static React 19 + Vite portfolio for a Frontend Engineer and AI Frontend Engineer. Includes project pages, accessible project dialogs, skills, resume downloads, and direct email contact. The repository contains one application, with no backend or external AI service required.
 
-This version moves the site beyond a static GitHub Pages portfolio into a split architecture:
-
-- `frontend/` is a React 19 + Vite app deployed to Vercel
-- `backend/` is a FastAPI service deployed to Render
-
-The result is a portfolio that feels like a product, not just a page. It includes interactive demos, a site chatbot, backend-powered project experiences, and deployment patterns that mirror real production workflows.
-
-## Overview
-
-This project is designed to present both engineering range and product judgment. Instead of only listing projects, the site lets visitors explore live demos and interact with systems that reflect the kinds of work I want to do professionally.
-
-Current experience includes:
-
-- A portfolio homepage with profile, skills, projects, and contact flows
-- Routed project pages for machine learning and frontend work
-- A sentiment analysis demo comparing browser-based and backend-based inference
-- A RAG-style document assistant with upload, ingestion, querying, and source inspection
-- A site chatbot that answers questions about the portfolio itself
-- Separate frontend and backend deployments for cleaner scaling and operations
-
-## Tech Stack
-
-### Frontend
-
-- React 19
-- Vite
-- React Router
-- React Icons
-- React Markdown
-
-### Backend
-
-- FastAPI
-- Uvicorn
-- NumPy
-- PyMuPDF
-- pypdf
-- Pillow
-- RapidOCR ONNX Runtime
-
-### Deployment
-
-- Vercel for the frontend
-- Render for the backend
-
-## Project Structure
+## Structure
 
 ```text
-portfolio/
-|-- frontend/   # React + Vite client
-`-- backend/    # FastAPI API
+src/
+  app/                    App shell, route behavior, and route labels
+  components/
+    layout/               Navigation and contact footer
+    ui/                   Loading state and error boundary
+  content/
+    profile.json          Identity, biography, and contact information
+    skills.json           Skill groups
+    projects.json         Project summaries, destinations, and metadata
+    projects/             One Markdown description per project
+    index.js              Content imports and project categories
+  features/
+    projects/components/  Project cards and details dialog
+  hooks/                  Shared theme and dialog-focus behavior
+  pages/                  Home, project listing, and 404 pages
+  styles/                 Global styles and theme variables
+  main.jsx                React entry point
+public/
+  icons/                  App and touch icons
+  AadishRathore.pdf        Resume, retaining its existing public URL
+  favicon.*               Browser favicons
+  site.webmanifest        App manifest
+build/                    Build-only metadata integration
+scripts/                  Production asset and bundle checks
+tests/
+  unit/                   Content integrity checks
+  browser/                Playwright interaction checks
+.github/workflows/        CI checks
+index.html                HTML entry point
+package.json              Dependencies and development commands
+vite.config.js            Development and build configuration
+vercel.json               SPA routing for deployment
 ```
 
-## Key Features
+Page and component styles live beside their corresponding JSX files. Global theme styles live in `src/styles/global.css`. Run all commands from the repository root.
 
-### Portfolio as a Product
+## Edit content
 
-The site is structured like a real application instead of a static resume page. Navigation, routing, loading states, interactive components, and backend-backed features are all part of the experience.
+Update `src/content/profile.json`, `skills.json`, or `projects.json`. Edit detailed case studies as Markdown in `src/content/projects/`; `detailsFile` in each project entry names its Markdown file. Use a unique `id`, `category: "ml"` or `"frontend"`, `repo`, and an optional `link` for a live demo. Project results are author-reported; link supporting evaluation evidence before adding new performance claims.
 
-### Interactive Sentiment Demo
+## Run locally
 
-The sentiment page is built to show applied NLP in a way that is easy for recruiters and hiring managers to understand. It compares lightweight client-side inference with a backend API workflow and makes model output visible in the UI.
+Requires Node.js 22.18+.
 
-### RAG-Inspired Document Assistant
-
-The RAG experience lets users load content, inspect indexed sources, and ask grounded questions against uploaded documents. It is meant to communicate retrieval, ingestion, and answer-tracing concepts in a portfolio-friendly format.
-
-### Recruiter-Friendly Architecture
-
-The monorepo cleanly separates presentation and API concerns:
-
-- `frontend/` focuses on user experience and deployment to Vercel
-- `backend/` handles content, ML demos, OCR, and API routes on Render
-
-This keeps the system simple to reason about while still showing end-to-end deployment skills.
-
-## Running Locally
-
-### Frontend
-
-```bash
-cd frontend
-npm install
+```sh
+npm ci
 npm run dev
 ```
 
-The frontend expects `VITE_API_URL` in `frontend/.env.local`.
+Open the local address printed by Vite (normally `http://localhost:5173`).
 
-Example:
+Copy `.env.example` to `.env.local` at the repository root and set `VITE_SITE_URL` to the actual public origin before publishing. It generates canonical/social URLs, robots.txt, and a sitemap. Leave it empty during local development if no public origin is configured.
 
-```env
-VITE_API_URL=http://localhost:8000
+## Verification
+
+```sh
+npm run lint
+npm test
+npm run build
 ```
 
-### Backend
+CI runs content checks, browser interaction tests, and production asset verification. For browser tests locally, install Chromium with `npx playwright install chromium`, or set `PLAYWRIGHT_CHANNEL=msedge` to use installed Microsoft Edge.
 
-```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app:app --reload
-```
+Preview the production build with `npm run preview` after building. Generated `dist/`, browser test results, and local environment files are ignored by Git.
 
-The backend reads:
+## Deploy to Vercel
 
-- `FRONTEND_ORIGIN`
-- `PORT`
+- Framework preset: Vite.
+- Root Directory: repository root. Leave the setting empty.
+- Install command: `npm ci`.
+- Build command: `npm run build`.
+- Output directory: `dist`.
+- Environment variable: `VITE_SITE_URL`, set to the published origin.
 
-Example:
+For an existing Vercel project previously configured with Root Directory `frontend`, clear that setting before the next deployment. All application files and configuration now live at the repository root.
 
-```env
-FRONTEND_ORIGIN=http://localhost:5173
-```
-
-## Deployment
-
-### Vercel
-
-- Import the repo into Vercel
-- Set the root directory to `frontend`
-- Use the `Vite` framework preset
-- Build command: `npm run build`
-- Output directory: `dist`
-- Add `VITE_API_URL=https://<your-render-service>.onrender.com`
-
-### Render
-
-- Create a new Web Service from the repo
-- Set the root directory to `backend`
-- Runtime: `Python`
-- Build command: `pip install -r requirements.txt`
-- Start command: `uvicorn app:app --host 0.0.0.0 --port $PORT`
-- Add `FRONTEND_ORIGIN=https://<your-vercel-app>.vercel.app`
-
-Python is pinned in the backend so Render uses a compatible version for OCR-related dependencies.
-
-## Recommended Deploy Order
-
-1. Deploy the backend on Render.
-2. Copy the Render URL into `VITE_API_URL` on Vercel.
-3. Deploy the frontend on Vercel.
-4. Copy the Vercel URL into `FRONTEND_ORIGIN` on Render.
-5. Redeploy the backend so CORS and frontend origin settings are aligned.
-
-## Why This Project Exists
-
-I wanted the portfolio itself to demonstrate the kind of engineering work I'm interested in: practical machine learning, modern frontend development, API design, and shipping polished user-facing systems.
-
-Instead of treating the portfolio as a static destination, this project treats it as a small platform that can evolve with new demos, new tooling, and new product ideas over time.
+`vercel.json` supports direct visits to project routes. Unknown and retired demo URLs show a useful 404 page. The contact link opens an email composer. Theme choices persist locally and respect the system theme on first visit.

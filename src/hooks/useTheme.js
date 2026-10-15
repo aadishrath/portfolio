@@ -6,7 +6,7 @@ export default function useTheme() {
       const saved = localStorage.getItem('portfolio-theme');
       if (saved === 'dark' || saved === 'light') return saved;
     } catch { /* Storage is optional. */ }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return 'light';
   });
 
   useEffect(() => {

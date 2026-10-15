@@ -1,5 +1,22 @@
 [
   {
+    "icon": "📄",
+    "title": "PaperWise",
+    "description": "A local-first document Q&A app with a Next.js interface, hybrid search, and answers grounded in source passages you can inspect.",
+    "repo": "https://github.com/aadishrath/paperWise",
+    "category": "ml",
+    "id": "paperwise",
+    "stack": [
+      "Next.js",
+      "TypeScript",
+      "FastAPI",
+      "Ollama",
+      "PostgreSQL / pgvector"
+    ],
+    "focus": "AI frontend experiences, local retrieval, and verifiable source citations",
+    "detailsFile": "paperwise.md"
+  },
+  {
     "icon": "🏡",
     "title": "House Price Prediction",
     "description": "This project builds and evaluates multiple machine learning models to predict house prices based on various features.",
@@ -8,16 +25,6 @@
     "id": "house-price-prediction",
     "focus": "Supporting work in applied machine learning",
     "detailsFile": "house-price-prediction.md"
-  },
-  {
-    "icon": "📊",
-    "title": "Logistic regression for predictions",
-    "description": "The project is built and trained using logistic regression model using TensorFlow, PyTorch and Scikit-Learn library.",
-    "repo": "https://github.com/aadishrath/MatchPredictor",
-    "category": "ml",
-    "id": "logistic-regression-for-predictions",
-    "focus": "Supporting work in applied machine learning",
-    "detailsFile": "logistic-regression-for-predictions.md"
   },
   {
     "icon": "🏦",

@@ -8,6 +8,9 @@ test('home offers direct contact, featured work, and retained project details', 
   await expect(page.getByText('Frontend Engineer | AI Frontend Engineer', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Email Me' })).toHaveAttribute('href', 'mailto:adib.rathore@gmail.com');
   await expect(page.getByRole('link', { name: 'View Resume' }).first()).toHaveAttribute('href', '/AadishRathore.pdf');
+  await expect(page.locator('#featured').getByRole('heading', { name: 'PaperWise', exact: true })).toBeVisible();
+  await expect(page.locator('#featured').getByRole('heading', { name: 'Frontend Engineering Portfolio', exact: true })).toHaveCount(0);
+  await expect(page.locator('#featured').getByRole('link', { name: 'Explore project →' }).last()).toHaveAttribute('href', '/projects#paperwise');
   await page.screenshot({ path: 'test-results/home.png', fullPage: true, animations: 'disabled' });
   await page.getByRole('link', { name: 'View Projects', exact: true }).click();
   const trigger = page.getByRole('button', { name: 'View details for AdiBank Copilot' });
@@ -33,8 +36,10 @@ test('ML projects render Markdown tables and expose only valid actions', async (
 });
 
 test('theme persists and retired routes show a useful 404', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
   const toggle = page.getByRole('button', { name: 'Toggle dark theme' });
+  await expect(page.locator('body')).toHaveClass('light');
   const before = await toggle.getAttribute('aria-pressed');
   await toggle.click(); await page.reload();
   await expect(toggle).toHaveAttribute('aria-pressed', before === 'true' ? 'false' : 'true');

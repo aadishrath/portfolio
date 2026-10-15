@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
-import { profile, skills, frontendProjects } from '../content';
+import { profile, skills, projects } from '../content';
 import { FaBrain, FaRobot, FaLaptopCode, FaTools, FaCogs, FaChartBar } from 'react-icons/fa';
 import './HomePage.css';
 
 const skillIcons = { FaBrain, FaRobot, FaLaptopCode, FaTools, FaCogs, FaChartBar };
 export default function HomePage() {
-  const featured = frontendProjects.slice(0, 2).filter(Boolean);
+  const featured = ['adibank-copilot', 'paperwise'].map(id => projects.find(project => project.id === id)).filter(Boolean);
   return <div className="about-container">
     <section className="hero-intro full-screen-hero">
       <h1 className="hero-title gradient-text">{profile.name}</h1>

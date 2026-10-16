@@ -1,80 +1,50 @@
-This project builds and evaluates multiple machine learning models to predict house prices based on various features. It includes data preprocessing, feature selection, hyperparameter tuning, and model evaluation. The best performing combination for each model is saved and later used for prediction via React UI.
+# AdiReality — House Price Prediction
 
-  - Data preprocessing: cleaning, scaling, and feature selection
-  - Model training: using six different regression algorithms
-  - Hyperparameter tuning: via GridSearchCV with cross-validation
-  - Evaluation: using MAE, MSE, RMSE, and R² Score
-  - Model saving: best models, scalers, and selected features are saved for predictions through React UI
+AdiReality is a React and Flask application that turns property details into status-aware price estimates. It connects a guided frontend workflow with six regression models trained on a national Realtor listing dataset.
 
-## 🔍 Models Used
-  The following models are trained and tuned:
-    - Linear Regression: baseline model with no hyperparameters
-    - Decision Tree Regressor:
-      - max_depth, min_samples_split
-    - Random Forest Regressor:
-      - n_estimators, max_depth, min_samples_split
-    - Support Vector Machine (SVR):
-      - C, kernel, gamma
-    - XGBoost Regressor:
-      - n_estimators, max_depth, learning_rate, subsample
-    - Neural Network (MLPRegressor):
-      - hidden_layer_sizes, activation, learning_rate_init
+## Frontend Experience
 
-  Each model undergoes feature selection using either:
-    - Recursive Feature Elimination (RFE) for linear models
-    - SelectFromModel for tree-based models
+- Schema-driven property forms with validation for rooms, home size, lot size, and location.
+- A price-context selector that distinguishes completed-sale prices from asking prices for listed or build-ready properties.
+- Model selection and a comparison table showing held-out evaluation results.
+- Sample inputs, clear/reset actions, loading and error states, and accessible result announcements.
+- A prediction summary and chart showing an estimate with an absolute-error band measured on held-out data.
 
-## 📁 Project Structure
+## Dataset and Modeling
 
-  ├── README.md             # Project documentation
-  ├── house_data.csv        # Input dataset
-  ├── requirements.txt      # Project libraries
-  ├── train_model.py        # Main training script
-  ├── app.py                # Flask script to setup backend for UI
-  ├── models/               # Saved models and metadata 
-  ├── scalers/              # Saved scalers per model 
-  ├── features/             # Selected features and feature order 
-  ├── react-ui/             # Interactive UI for user
+The current training metadata records 2,226,382 source rows and 2,201,789 retained rows after quality filtering. Inputs include status, bedrooms, bathrooms, home size, lot size, state, city, and ZIP code. ZIP codes remain strings to preserve leading zeros.
 
+Numeric values are imputed during training. Geographic and status features use cross-fitted target encoding to avoid encoding a training row with its own target. Models learn log-transformed prices, with scaling for the linear, SVR, and neural models.
 
-## 🧹 Dropped Features Before Training
-  Certain features were dropped prior to model training due to the following reasons:
+Six candidates are compared on the same random 80/20 holdout, stratified by status. After evaluation, all saved prediction models are refitted on every retained row. XGBoost and the PyTorch neural network use CUDA when available, with CPU fallback and portable CPU inference.
 
-    | Feature       | Reason for Dropping                                     |
-    |---------------|---------------------------------------------------------|
-    | id            | Unique identifier; no predictive value                  |
-    | date          | Timestamp of sale; not useful without temporal modeling |
-    | sqft_basement | Highly correlated with sqft_living and sqft_above       |
-    | yr_renovated  | Mostly zeros; sparse and not informative                |
+## Current Evaluation Snapshot
 
-  These features either introduced noise, redundancy, or lacked meaningful variance. Dropping them improved model interpretability and reduced overfitting risk.
+The following rounded results come from the project's saved model metrics. Dollar errors combine asking-price and completed-sale records; they describe this dataset snapshot, not guaranteed accuracy for an individual home.
 
+| Model | MAE (USD) | Median absolute error (USD) | R² |
+| --- | ---: | ---: | ---: |
+| Linear Regression | 256,511 | 74,147 | -2.154 |
+| Linear SVR | 302,029 | 71,346 | -5.337 |
+| PyTorch Neural Network | 217,264 | 67,652 | -0.555 |
+| Histogram Gradient Boosting | 176,951 | 61,580 | 0.497 |
+| Random Forest | 172,248 | 60,729 | 0.547 |
+| XGBoost | 169,851 | 58,845 | 0.548 |
 
-## 📊 Dataset
-  The dataset contains housing features and sale prices. Key input features include:
-    - bedrooms, bathrooms, floors, waterfront, view, condition, grade
-    - yr_built, lat, long, sqft_living, sqft_lot, zipcode, etc.
-    - price (target variable)
+XGBoost has the lowest overall holdout MAE and is the default model. Evaluation also reports RMSE, MAPE, mean error, status-specific metrics, and an 80% absolute-error radius. The radius is measured on the holdout; it is not a guarantee of coverage for new properties.
 
+## Engineering and Stack
 
-## 🧠 Models Trained
+React 19, Vite, CSS, Python, Flask, pandas, scikit-learn, PyTorch, and XGBoost. The Flask API validates prediction inputs and serves model metadata and generated form schemas, keeping frontend controls aligned with inference requirements.
 
-  | Model             | R² Score | RMSE       | MAE        | Best Parameters |
-  |-------------------|----------|------------|------------|-----------------|
-  | Linear Regression | 0.634    | 222,106    | 134,890    |        —        |
-  | Decision Tree  | 0.780    | 172,272    | 90,299     | max_depth=10, min_samples_split=20 |
-  | Random Forest     | 0.884    | 125,005    | 71,291     | n_estimators=100, max_depth=None, min_samples_split=5 |
-  | SVM               | 0.505    | 258,194    | 135,032    | C=10, kernel=linear, gamma=scale |
-  | XGBoost           | 0.867    | 133,653    | 71,808     | learning_rate=0.05, max_depth=6, n_estimators=200, subsample=1.0 |
-  | Neural Network    | 0.882    | 125,841    | 75,333     | activation=relu, hidden_layer_sizes=(64,64), learning_rate_init=0.005 |
+## Scope and Limitations
 
+The model estimates the dataset's recorded price conditioned on status: completed-sale price for sold properties, asking/list price for other supported statuses. The source has no reliable current observation date, so this app does not estimate today's market value or generate a monthly market trend.
 
-## 🏆 Best Performing Model
-  Random Forest Regressor
+The random holdout does not test future market conditions or unseen geographic regions. Data may contain duplicates, stale listings, or uneven market coverage. Results are educational estimates rather than appraisals or offers.
 
-## 🛠️ Setup Instructions
-  Must follow all steps in order. 3 terminal windows will be used here.
-    1. Install Dependencies
-    2. Run Training Script
-    3. Run Backend Script
-    4. Run UI Script
+## Source and Evaluation Evidence
+
+- [Project repository and setup](https://github.com/aadishrath/housePrediction)
+- [Saved model metrics](https://github.com/aadishrath/housePrediction/blob/main/models/model_metrics.json)
+- [Training metadata](https://github.com/aadishrath/housePrediction/blob/main/models/training_metadata.json)

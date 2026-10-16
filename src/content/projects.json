@@ -18,12 +18,19 @@
   },
   {
     "icon": "🏡",
-    "title": "House Price Prediction",
-    "description": "This project builds and evaluates multiple machine learning models to predict house prices based on various features.",
+    "title": "AdiReality — House Price Prediction",
+    "description": "A React and Flask app with property forms, six-model comparison, and status-aware price estimates trained on 2.2 million national real estate records.",
     "repo": "https://github.com/aadishrath/housePrediction",
     "category": "ml",
     "id": "house-price-prediction",
-    "focus": "Supporting work in applied machine learning",
+    "stack": [
+      "React",
+      "Flask",
+      "scikit-learn",
+      "PyTorch",
+      "XGBoost"
+    ],
+    "focus": "Frontend workflows for ML predictions, model comparison, and clear uncertainty",
     "detailsFile": "house-price-prediction.md"
   },
   {

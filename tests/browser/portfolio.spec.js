@@ -31,7 +31,7 @@ test('home offers direct contact, featured work, and retained project details', 
 test('ML projects render Markdown tables and expose only valid actions', async ({ page }) => {
   await page.goto('/projects');
   await expect(page.getByRole('link', { name: 'Live Demo' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'View details for House Price Prediction' }).click();
+  await page.getByRole('button', { name: 'View details for AdiReality — House Price Prediction' }).click();
   await expect(page.getByRole('dialog').getByRole('table').first()).toBeVisible();
 });
 
